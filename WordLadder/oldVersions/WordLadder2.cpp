@@ -89,18 +89,18 @@ set<string> WordLadder::generateAllWords(string word) {
 	for (int i = 0; i < word.size(); i++) {
 		// check this condition agiain later
 		string wordP = word;
-//		char cOfWord = wordP.at(i);
-//		char cOfLast = this->lastWord.at(i);
-//		char start, last;
-//		if (cOfWord < cOfLast) {
-//			start = cOfWord;
-//			last = cOfLast;
-//		}
-//		else {
-//			start = cOfLast;
-//			last = cOfWord;
-//		}
-		for (char c = 'a'; c <= 'z'; ++c) {
+		char cOfWord = wordP.at(i);
+		char cOfLast = this->lastWord.at(i);
+		char start, last;
+		if (cOfWord < cOfLast) {
+			start = cOfWord;
+			last = cOfLast;
+		}
+		else {
+			start = cOfLast;
+			last = cOfWord;
+		}
+		for (char c = start; c <= last; ++c) {
 			string str(1, c);
 			wordP.replace(i,1,str);
 			if (usedWord.find(wordP) == usedWord.end())

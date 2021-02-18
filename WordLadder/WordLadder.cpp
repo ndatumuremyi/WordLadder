@@ -11,112 +11,10 @@
 #include<queue>
 #include<stack>
 #include<set>
+#include"WordLadder.h"
 
 
 using namespace std;
-int getIndex(string, set<string>&);
-class WordLadder {
-private:
-	queue<stack<string>> allPossibleLadder;
-	string lastWord;
-	string firstWord;
-	set<string> words;
-	set<string> usedWord;
-
-public:
-	set<string> generateAllWords(string);
-	stack<string> getLadder();
-	void getLadderH();
-
-	WordLadder(string first, string last, set<string> words) {
-		this->words = words;
-		this->lastWord = last;
-		this->firstWord = first;
-		//usedWord.push_back(first);
-		usedWord.insert(first);
-	}
-	
-};
-stack<string> WordLadder::getLadder() {
-	stack<string> ladder;
-	ladder.push(this->firstWord);
-
-	allPossibleLadder.push(ladder);
-	getLadderH();
-	if (this->allPossibleLadder.empty()) {
-		ladder.pop();
-		return ladder;
-	}
-	else {
-		return this->allPossibleLadder.front();
-	}
-}
-void WordLadder::getLadderH() {
-	stack<string> ladder = this->allPossibleLadder.front();
-	this->allPossibleLadder.pop();
-
-	string currentWord = ladder.top();
-	
-	//not net dif
-	set<string> allPossibleWords = generateAllWords(currentWord);
-	for (auto word : allPossibleWords) {
-		stack<string> newLadder(ladder);
-		newLadder.push(word);
-		//cout << " \n " << word << "\n";
-		this->allPossibleLadder.push(newLadder);
-
-	}
-	string nextWord;
-	if (!this->allPossibleLadder.empty()) {
-		ladder = this->allPossibleLadder.front();
-		nextWord = ladder.top();
-	}
-	
-	if (allPossibleLadder.empty()) {
-	
-		return;
-	}
-	else if (!nextWord.compare(lastWord)) {
-		return;
-	}
-	else {
-		getLadderH();
-	}
-}
-set<string> WordLadder::generateAllWords(string word) {
-	set<string> possibleWords;
-	
-	for (int i = 0; i < word.size(); i++) {
-		// check this condition agiain later
-		string wordP = word;
-		char cOfWord = wordP.at(i);
-		char cOfLast = this->lastWord.at(i);
-		char start, last;
-		if (cOfWord < cOfLast) {
-			start = cOfWord;
-			last = cOfLast;
-		}
-		else {
-			start = cOfLast;
-			last = cOfWord;
-		}
-		for (char c = start; c <= last; ++c) {
-			string str(1, c);
-			wordP.replace(i,1,str);
-			if (usedWord.find(wordP) == usedWord.end())
-			{
-				if (getIndex(wordP, this->words) != -1) {
-					
-					possibleWords.insert(wordP);
-					this->usedWord.insert(wordP);
-				}
-			}
-			
-			
-		}
-	}
-	return possibleWords;
-}
 
 
 
@@ -147,7 +45,7 @@ int main()
 	string firstWord, secondWord;
 	cout << endl << "welcome \n enter two english word to provide ladder \n";
 
-	
+
 
 	set<string> words;
 	ifstream get;//reading the file
@@ -163,55 +61,61 @@ int main()
 	int indexOfFirst = -1, indexOfSecond = -1;
 	do {
 
-	
-	do {
-		while (indexOfFirst == -1) {
-			cout << "enter first word :";
-			cin >> firstWord;
 
-			indexOfFirst = getIndex(firstWord, words);
-			if (indexOfFirst == -1) {
-				cout << "\n no such word exist, you can try again \n";
+		do {
+			while (indexOfFirst == -1) {
+				cout << "enter first word :";
+				cin >> firstWord;
+
+				indexOfFirst = getIndex(firstWord, words);
+				if (indexOfFirst == -1) {
+					cout << "\n no such word exist, you can try again \n";
+				}
+
 			}
+			while (indexOfSecond == -1) {
 
-		}
-		while (indexOfSecond == -1) {
-		
-			cout << "enter second word :";
-			cin >> secondWord;
-			indexOfSecond = getIndex(secondWord, words);
+				cout << "enter second word :";
+				cin >> secondWord;
+				indexOfSecond = getIndex(secondWord, words);
 
-			if (indexOfSecond == -1) {
-				cout << " \n no such word exist , you can try again \n ";
+				if (indexOfSecond == -1) {
+					cout << " \n no such word exist , you can try again \n ";
+				}
+
+
 			}
+			if (firstWord.size() != secondWord.size()) {
+				cout << "\n file size must equal try again \n";
+				indexOfFirst = indexOfSecond = -1;
+			}
+		} while (firstWord.size() != secondWord.size());
 
+		WordLadder wordLadder(firstWord, secondWord, words);
+		vector<string> ladder = wordLadder.getLadder();
 
+		if (ladder.empty()) {
+			cout << "\n unable to find ladder \n ";
 		}
-		if (firstWord.size() != secondWord.size()) {
-			cout << "\n file size must equal try again \n";
+		else {
+			/*while (!ladder.empty()) {
+				cout << ladder.top() << "-> ";
+				ladder.pop();
+
+
+			}*/
+			for (vector<string>::iterator i = ladder.begin(); i < ladder.end(); i++) {
+				cout << *i << "->";
+			}
+		}
+
+
+		cout << "\n \n do you want to try again ? \'y\' for yes :";
+		cin >> tryAgain;
+		cin.clear();
+		if (tryAgain == 'y') {
 			indexOfFirst = indexOfSecond = -1;
 		}
-	} while (firstWord.size() != secondWord.size());
-
-	WordLadder wordLadder(firstWord, secondWord,words);
-	stack<string> ladder = wordLadder.getLadder();
-
-	if (ladder.empty()) {
-		cout << "\n unable to find ladder \n ";
-	}
-	else {
-		while (!ladder.empty()) {
-			cout << ladder.top() << "-> ";
-			ladder.pop();
-		}
-	}
-	
-	cout << "\n \n do you want to try again ? \'y\' for yes :";
-	cin >> tryAgain;
-	cin.clear();
-	if (tryAgain == 'y') {
-		indexOfFirst = indexOfSecond = -1;
-	}
 	} while (tryAgain == 'y');
 
 
@@ -219,12 +123,12 @@ int main()
 
 	//cout << "first word is " << indexOfFirst << " and second word is " << indexOfSecond;
 
-	
+
 
 }
-int getIndex(string word, set<string> &words) {
+int getIndex(string word, set<string>& words) {
 	set<string>::iterator it = words.find(word);
-	
+
 
 	if (it == words.end()) {
 		return -1;
