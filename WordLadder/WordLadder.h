@@ -10,108 +10,91 @@
 //peace-zeros
 
 using namespace std;
-int getIndex(string, set<string>&);
+bool isWordExist(string, set<string>&);
 class WordLadder {
 private:
-	queue<vector<string>> allPossibleLadder;
-	string lastWord;
+	queue<vector<string>> AllLadders;
+	string secondWord;
 	string firstWord;
 	set<string> words;
 	set<string> usedWord;
+	vector<string> choosenLadder;
 
-
+	//other valiables used in program
+	vector<string> prevLadder;
 
 public:
-	set<string> generateAllWords(string);
+	set<string> generateAllValidWords(string);
 	vector<string> getLadder();
 	void getLadderH();
 
-	WordLadder(string first, string last, set<string> words) {
+	WordLadder(string first, string second, set<string>& words) {
 		this->words = words;
-		this->lastWord = last;
+		this->secondWord = second;
 		this->firstWord = first;
-		//usedWord.push_back(first);
+
 		usedWord.insert(first);
 	}
 
 };
 vector<string> WordLadder::getLadder() {
 	vector<string> ladder;
-	ladder.push_back(this->firstWord);
-	//ladder.push();
+	ladder.push_back(firstWord);
+	
 
-	allPossibleLadder.push(ladder);
+	AllLadders.push(ladder);
 	getLadderH();
-	if (this->allPossibleLadder.empty()) {
-		//ladder.pop();
-		ladder.pop_back();
-		return ladder;
-	}
-	else {
-		return this->allPossibleLadder.front();
-	}
+	
+	return this->choosenLadder;
 }
 void WordLadder::getLadderH() {
-	vector<string> ladder = this->allPossibleLadder.front();
-	this->allPossibleLadder.pop();
+	
+	prevLadder = AllLadders.front();
+	AllLadders.pop();
 
-	//string currentWord = ladder.top();
-	string currentWord = ladder.back();
+	
+	string wordToOpareateOn = prevLadder.back();
 
-	//not net dif
-	set<string> allPossibleWords = generateAllWords(currentWord);
-	for (auto word : allPossibleWords) {
-		vector<string> newLadder(ladder);
-		//newLadder.push(word);
+	set<string> allValidWords = generateAllValidWords(wordToOpareateOn);
+	for (auto word : allValidWords) {
+		vector<string> newLadder(prevLadder);
+		
+
 		newLadder.push_back(word);
-		//cout << " \n " << word << "\n";
-		this->allPossibleLadder.push(newLadder);
+		if (word == secondWord) {
+			this->choosenLadder = newLadder;
+			return;
+		}
+		
+		AllLadders.push(newLadder);
 
 	}
-	string nextWord;
-	if (!this->allPossibleLadder.empty()) {
-		ladder = this->allPossibleLadder.front();
-		//nextWord = ladder.top();
-		nextWord = ladder.back();
-	}
 
-	if (allPossibleLadder.empty()) {
-
+	if (AllLadders.empty()) {
 		return;
 	}
-	else if (!nextWord.compare(lastWord)) {
-		return;
-	}
+	
 	else {
 		getLadderH();
 	}
 }
-set<string> WordLadder::generateAllWords(string word) {
+set<string> WordLadder::generateAllValidWords(string word) {
 	set<string> possibleWords;
 
 	for (int i = 0; i < word.size(); i++) {
-		// check this condition agiain later
-		string wordP = word;
-		/*char cOfWord = wordP.at(i);
-		char cOfLast = this->lastWord.at(i);
-		char start, last;
-		if (cOfWord < cOfLast) {
-			start = cOfWord;
-			last = cOfLast;
-		}
-		else {
-			start = cOfLast;
-			last = cOfWord;
-		}*/
-		for (char c = 'a'; c <= 'z'; ++c) {
-			string str(1, c);
-			wordP.replace(i, 1, str);
-			if (usedWord.find(wordP) == usedWord.end())
+		
+		string wordToOparateOn = word;
+		
+		for (char ch = 'a'; ch <= 'z'; ++ch) {
+			//this create string from char, in order to be able to replace it in wordtoOparateOn
+			string formString(1, ch);
+			wordToOparateOn.replace(i, 1, formString);
+			if (usedWord.find(wordToOparateOn) == usedWord.end())
 			{
-				if (getIndex(wordP, this->words) != -1) {
+				if (isWordExist(wordToOparateOn, words)) {
 
-					possibleWords.insert(wordP);
-					this->usedWord.insert(wordP);
+					possibleWords.insert(wordToOparateOn);
+					this->usedWord.insert(wordToOparateOn);
 				}
 			}
 
