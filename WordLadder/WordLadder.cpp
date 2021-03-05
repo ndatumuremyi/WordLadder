@@ -14,10 +14,8 @@
 #include"WordLadder.h"
 
 
+
 using namespace std;
-
-
-
 
 
 
@@ -43,51 +41,52 @@ int main()
 {
 	char tryAgain;
 	string firstWord, secondWord;
-	cout << endl << "welcome \n enter two english word to provide ladder \n";
-
+	
 
 
 	set<string> words;
-	ifstream get;//reading the file
-	//get.open("file1.txt");//openning the file
+	ifstream get;
+
 	get.open("EnglishWords 1.dat");
-	if (!get)//checking if the file exists
+	if (!get)
 	{
 
-		cout << "loss of allocation \n";
+		cout << "file not found,  \n";
 		return 0;
 	}
-	words = getWords(get);//called functions
-	bool indexOfFirst = false, indexOfSecond = false;
+	words = getWords(get);
+	bool isFirstWordValid = false, isSecondWordValid = false;
+	cout << endl << " \t welcome \n \n \n" << "***********************" << "\n \t enter two english word to provide ladder \n \n \n";
+
 	do {
 
 
 		do {
-			while (!indexOfFirst) {
-				cout << "enter first word :";
+			while (!isFirstWordValid) {
+				cout << "type first word :";
 				cin >> firstWord;
 
-				indexOfFirst = isWordExist(firstWord, words);
-				if (!indexOfFirst) {
-					cout << "\n no such word exist, you can try again \n";
+				isFirstWordValid = isWordExist(firstWord, words);
+				if (!isFirstWordValid) {
+					cout << "\n use existing word only, try again \n";
 				}
 
 			}
-			while (!indexOfSecond) {
+			while (!isSecondWordValid) {
 
-				cout << "enter second word :";
+				cout << "type second word :";
 				cin >> secondWord;
-				indexOfSecond = isWordExist(secondWord, words);
+				isSecondWordValid = isWordExist(secondWord, words);
 
-				if (!indexOfSecond) {
-					cout << " \n no such word exist , you can try again \n ";
+				if (!isSecondWordValid) {
+					cout << " \n try again with word that do exist, \n ";
 				}
 
 
 			}
 			if (firstWord.size() != secondWord.size()) {
-				cout << "\n file size must equal try again \n";
-				indexOfFirst = indexOfSecond = false;
+				cout << "\n words size must equal, try again,  \n";
+				isFirstWordValid = isSecondWordValid = false;
 			}
 		} while (firstWord.size() != secondWord.size());
 
@@ -109,23 +108,17 @@ int main()
 		cin >> tryAgain;
 		cin.clear();
 		if (tryAgain == 'y') {
-			indexOfFirst = indexOfSecond = false;
+			isFirstWordValid = isSecondWordValid = false;
 		}
 	} while (tryAgain == 'y');
 
 
 
-
-	//cout << "first word is " << indexOfFirst << " and second word is " << indexOfSecond;
-
-
-
 }
 bool isWordExist(string word, set<string>& words) {
-	set<string>::iterator it = words.find(word);
-
-
-	if (it == words.end()) {
+	
+	//find method return iterator of element, else return last iterator that does not point to any element
+	if (words.find(word) == words.end()) {
 		return false;
 	}
 	else {
